@@ -10,6 +10,6 @@ public class PenguinGame extends Game {
 	
 	@Override
 	public void create () {
-        setScreen(new GameScreen(this, new TmxMapLoader().load("tilemaps/1.tmx")));
+        setScreen(new GameScreen(this, new TmxMapLoader().load("tilemaps/2.tmx")));
 	}
 }

@@ -21,18 +21,15 @@ public class Penguin extends Image {
         void onStateChange(int state);
     }
 
+    private static Penguin instance;
+
     public static final int STATE_IDLE = 0;
     public static final int STATE_MOVE = 1;
-
-    public static final Vector2 LEFT = new Vector2(-1f, 0f);
-    public static final Vector2 RIGHT = new Vector2(1f, 0f);
-    public static final Vector2 UP = new Vector2(0f, 1f);
-    public static final Vector2 DOWN = new Vector2(0f, -1f);
 
     private Set<PenguinStateListener> listeners = new HashSet<PenguinStateListener>();
 
     private int state = STATE_IDLE;
-    private Vector2 direction = DOWN;
+    private Vector2 direction = Constants.DOWN;
 
     private static HashMap<Integer, HashMap<Vector2, Sprite>> spriteMap;
     static {
@@ -43,22 +40,29 @@ public class Penguin extends Image {
         skin.addRegions(atlas);
 
         HashMap<Vector2, Sprite> idleMap = new HashMap<Vector2, Sprite>();
-        idleMap.put(LEFT, skin.getSprite("gunter_idle_left"));
-        idleMap.put(RIGHT, skin.getSprite("gunter_idle_right"));
-        idleMap.put(UP, skin.getSprite("gunter_idle_back"));
-        idleMap.put(DOWN, skin.getSprite("gunter_idle_front"));
+        idleMap.put(Constants.LEFT, skin.getSprite("gunter_idle_left"));
+        idleMap.put(Constants.RIGHT, skin.getSprite("gunter_idle_right"));
+        idleMap.put(Constants.UP, skin.getSprite("gunter_idle_back"));
+        idleMap.put(Constants.DOWN, skin.getSprite("gunter_idle_front"));
         spriteMap.put(STATE_IDLE, idleMap);
 
         HashMap<Vector2, Sprite> slideMap = new HashMap<Vector2, Sprite>();
-        slideMap.put(LEFT, skin.getSprite("gunter_slide_left"));
-        slideMap.put(RIGHT, skin.getSprite("gunter_slide_right"));
-        slideMap.put(UP, skin.getSprite("gunter_slide_back"));
-        slideMap.put(DOWN, skin.getSprite("gunter_slide_front"));
+        slideMap.put(Constants.LEFT, skin.getSprite("gunter_slide_left"));
+        slideMap.put(Constants.RIGHT, skin.getSprite("gunter_slide_right"));
+        slideMap.put(Constants.UP, skin.getSprite("gunter_slide_back"));
+        slideMap.put(Constants.DOWN, skin.getSprite("gunter_slide_front"));
         spriteMap.put(STATE_MOVE, slideMap);
     }
 
-    public Penguin() {
-        super(spriteMap.get(STATE_IDLE).get(DOWN));
+    public synchronized static Penguin getInstance() {
+        if(instance == null) {
+            instance = new Penguin();
+        }
+        return instance;
+    }
+
+    private Penguin() {
+        super(spriteMap.get(STATE_IDLE).get(Constants.DOWN));
         setWidth(getWidth() / Constants.GAME_UNIT);
         setHeight(getHeight() / Constants.GAME_UNIT);
     }
@@ -72,14 +76,14 @@ public class Penguin extends Image {
     }
 
     public void setDirection(Vector2 direction) {
-        if(LEFT.hasSameDirection(direction)) {
-            this.direction = LEFT;
-        } else if (RIGHT.hasSameDirection(direction)) {
-            this.direction = RIGHT;
-        } else if (UP.hasSameDirection(direction)) {
-            this.direction = UP;
+        if(Constants.LEFT.hasSameDirection(direction)) {
+            this.direction = Constants.LEFT;
+        } else if (Constants.RIGHT.hasSameDirection(direction)) {
+            this.direction = Constants.RIGHT;
+        } else if (Constants.UP.hasSameDirection(direction)) {
+            this.direction = Constants.UP;
         } else {
-            this.direction = DOWN;
+            this.direction = Constants.DOWN;
         }
         setDrawable();
     }

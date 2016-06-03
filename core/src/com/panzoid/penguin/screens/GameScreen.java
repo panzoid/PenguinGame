@@ -46,12 +46,12 @@ public class GameScreen extends PenguinScreen {
         tiledMapRenderer.setView(camera);
 
         stage = new Stage(new FitViewport(camera.viewportWidth, camera.viewportHeight, camera), batch);
-        penguin = new Penguin();
+        penguin = Penguin.getInstance();
         stage.addActor(penguin);
-        stage.addActor(new MoveButton(new Texture("sprites/arrow_left.png"), penguin, Penguin.LEFT, tiledMap));
-        stage.addActor(new MoveButton(new Texture("sprites/arrow_right.png"), penguin, Penguin.RIGHT, tiledMap));
-        stage.addActor(new MoveButton(new Texture("sprites/arrow_up.png"), penguin, Penguin.UP, tiledMap));
-        stage.addActor(new MoveButton(new Texture("sprites/arrow_down.png"), penguin, Penguin.DOWN, tiledMap));
+        stage.addActor(new MoveButton(new Texture("sprites/arrow_left.png"), penguin, Constants.LEFT, tiledMap));
+        stage.addActor(new MoveButton(new Texture("sprites/arrow_right.png"), penguin, Constants.RIGHT, tiledMap));
+        stage.addActor(new MoveButton(new Texture("sprites/arrow_up.png"), penguin, Constants.UP, tiledMap));
+        stage.addActor(new MoveButton(new Texture("sprites/arrow_down.png"), penguin, Constants.DOWN, tiledMap));
 
         input.addProcessor(stage);
         Gdx.input.setInputProcessor(input);
@@ -79,22 +79,22 @@ public class GameScreen extends PenguinScreen {
     }
 
     private void handleInput() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-            camera.position.x -= 1f;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-            camera.position.x += 1f;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-            camera.position.y -= 1f;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
-            camera.position.y += 1f;
-        }
-
         if(penguin.getState() == Penguin.STATE_MOVE) {
             camera.position.x = penguin.getX();
             camera.position.y = penguin.getY();
+        } else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+                camera.position.x -= 1f;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+                camera.position.x += 1f;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+                camera.position.y -= 1f;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+                camera.position.y += 1f;
+            }
         }
 
         camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100/camera.viewportWidth);

@@ -19,23 +19,6 @@ public class MoveButton extends Image implements Penguin.PenguinStateListener {
     private final Vector2 direction;
     private final TiledMap tiledMap;
 
-    private final Action startMove = new Action() {
-        @Override
-        public boolean act(float delta) {
-            penguin.setDirection(direction);
-            penguin.setState(Penguin.STATE_MOVE);
-            return true;
-        }
-    };
-
-    private final Action stopMove = new Action() {
-        @Override
-        public boolean act(float delta) {
-            penguin.setState(Penguin.STATE_IDLE);
-            return true;
-        }
-    };
-
     public MoveButton(final Texture texture, final Penguin penguin, final Vector2 direction, final TiledMap map) {
         super(texture);
         setWidth(getWidth() / Constants.GAME_UNIT);
@@ -50,13 +33,14 @@ public class MoveButton extends Image implements Penguin.PenguinStateListener {
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                Vector2 moveableTo = Utilities.getMoveableTo(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap);
-                // 10 units/second
-                float moveSpeed = moveableTo.dst(penguin.getX(), penguin.getY()) / 10f;
-                penguin.addAction(Actions.sequence(
-                        startMove,
-                        Actions.moveTo(moveableTo.x, moveableTo.y, moveSpeed),
-                        stopMove));
+                Action action = Utilities.getAction(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap);
+                if(action != null) {
+                    penguin.setDirection(direction);
+                    penguin.addAction(Actions.sequence(
+                            Utilities.startMove,
+                            action,
+                            Utilities.stopMove));
+                }
                 return true;
             }
         });
@@ -73,6 +57,6 @@ public class MoveButton extends Image implements Penguin.PenguinStateListener {
     }
 
     private boolean canMove() {
-        return Utilities.getMoveableTo(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap).dst(penguin.getX(), penguin.getY()) >= 1f;
+        return Utilities.getAction(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap) != null;
     }
 }
