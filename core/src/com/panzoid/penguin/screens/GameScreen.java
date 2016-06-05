@@ -14,14 +14,19 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.panzoid.penguin.Constants;
-import com.panzoid.penguin.actors.Penguin;
 import com.panzoid.penguin.Utilities;
 import com.panzoid.penguin.actors.MoveButton;
+import com.panzoid.penguin.actors.Penguin;
 
 /**
  * Created by weipa on 6/1/16.
@@ -30,15 +35,16 @@ public class GameScreen extends PenguinScreen {
 
     private final SpriteBatch batch;
     private final TiledMapRenderer tiledMapRenderer;
+    private final InputMultiplexer input;
+    private final Skin skin;
     private final OrthographicCamera camera;
     private final Stage stage;
-    private final InputMultiplexer input;
 
-    private final Skin skin;
+    private final OrthographicCamera uiCamera;
+    private final Stage uiStage;
 
     public final Penguin penguin;
     public final TiledMap tiledMap;
-
     public int moves;
 
 
@@ -50,6 +56,9 @@ public class GameScreen extends PenguinScreen {
         batch.setProjectionMatrix(camera.combined);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Constants.GAME_SCALE, batch);
         tiledMapRenderer.setView(camera);
+
+        uiCamera = new OrthographicCamera(camera.viewportWidth / Constants.GAME_SCALE, camera.viewportHeight / Constants.GAME_SCALE);
+        uiStage = new Stage(new FitViewport(uiCamera.viewportWidth, uiCamera.viewportHeight, uiCamera));
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
@@ -70,6 +79,7 @@ public class GameScreen extends PenguinScreen {
         stage.addActor(new MoveButton(this, new Texture("sprites/arrow_down.png"), Constants.DOWN));
 
         input = new InputMultiplexer();
+        input.addProcessor(uiStage);
         input.addProcessor(stage);
         input.addProcessor(new InputAdapter() {
             private int x;
@@ -114,8 +124,12 @@ public class GameScreen extends PenguinScreen {
         batch.setProjectionMatrix(camera.combined);
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
-        stage.act(Gdx.graphics.getDeltaTime());
+        stage.act(delta);
+        stage.getViewport().apply();
         stage.draw();
+        uiStage.act(delta);
+        uiStage.getViewport().apply();
+        uiStage.draw();
     }
 
     private void updateCamera() {
@@ -134,13 +148,30 @@ public class GameScreen extends PenguinScreen {
     }
 
     private void showScore() {
-        TextButton button = new TextButton("OK", skin, "default");
-        //button.setScale(Constants.GAME_SCALE);
-        button.setWidth(camera.viewportWidth / 2);
-        button.setHeight(camera.viewportHeight / 2);
-        button.setPosition(camera.viewportWidth / 4, camera.viewportHeight / 4);
+        HorizontalGroup horizontalGroup = new HorizontalGroup();
+        for(int i=3; i>0; i--) {
+            if(moves <= i*10) {
+                horizontalGroup.addActor(new Image(new Texture("sprites/star_yellow.png")));
+            } else {
+                horizontalGroup.addActor(new Image(new Texture("sprites/star_blank.png")));
+            }
+        }
 
-        stage.addActor(button);
+        TextButton button = new TextButton("OK", skin);
+        button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MenuScreen(game));
+            }
+        });
+
+        VerticalGroup verticalGroup = new VerticalGroup();
+        verticalGroup.addActor(horizontalGroup);
+        verticalGroup.addActor(button);
+        verticalGroup.center();
+        verticalGroup.setPosition(uiStage.getCamera().viewportWidth / 2, uiStage.getCamera().viewportHeight / 2);
+
+        uiStage.addActor(verticalGroup);
     }
 
     @Override
@@ -148,6 +179,8 @@ public class GameScreen extends PenguinScreen {
         super.dispose();
         batch.dispose();
         tiledMap.dispose();
+        skin.dispose();
         stage.dispose();
+        uiStage.dispose();
     }
 }

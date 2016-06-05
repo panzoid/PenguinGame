@@ -1,8 +1,7 @@
 package com.panzoid.penguin;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.panzoid.penguin.screens.GameScreen;
+import com.panzoid.penguin.screens.MenuScreen;
 
 public class PenguinGame extends Game {
 
@@ -10,6 +9,6 @@ public class PenguinGame extends Game {
 	
 	@Override
 	public void create () {
-        setScreen(new GameScreen(this, new TmxMapLoader().load("tilemaps/2.tmx")));
+        setScreen(new MenuScreen(this));
 	}
 }
