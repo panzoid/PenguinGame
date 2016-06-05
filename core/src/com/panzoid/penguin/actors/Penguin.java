@@ -17,16 +17,15 @@ import java.util.Set;
  */
 public class Penguin extends Image {
 
-    public interface PenguinStateListener {
+    public interface PenguinListener {
         void onStateChange(int state);
     }
 
-    private static Penguin instance;
-
     public static final int STATE_IDLE = 0;
     public static final int STATE_MOVE = 1;
+    public static final int STATE_FINISH = 2;
 
-    private Set<PenguinStateListener> listeners = new HashSet<PenguinStateListener>();
+    private Set<PenguinListener> listeners = new HashSet<PenguinListener>();
 
     private int state = STATE_IDLE;
     private Vector2 direction = Constants.DOWN;
@@ -54,24 +53,16 @@ public class Penguin extends Image {
         spriteMap.put(STATE_MOVE, slideMap);
     }
 
-    public synchronized static Penguin getInstance() {
-        if(instance == null) {
-            instance = new Penguin();
-        }
-        return instance;
-    }
-
-    private Penguin() {
+    public Penguin() {
         super(spriteMap.get(STATE_IDLE).get(Constants.DOWN));
-        setWidth(getWidth() / Constants.GAME_UNIT);
-        setHeight(getHeight() / Constants.GAME_UNIT);
+        setScale(Constants.GAME_SCALE);
     }
 
-    public boolean addListener(PenguinStateListener listener) {
+    public boolean addListener(PenguinListener listener) {
         return listeners.add(listener);
     }
 
-    public boolean removeListener(PenguinStateListener listener) {
+    public boolean removeListener(PenguinListener listener) {
         return listeners.remove(listener);
     }
 
@@ -90,7 +81,7 @@ public class Penguin extends Image {
 
     public void setState(int state) {
         this.state = state;
-        for(PenguinStateListener listener : listeners) {
+        for(PenguinListener listener : listeners) {
             listener.onStateChange(state);
         }
         setDrawable();
@@ -101,7 +92,7 @@ public class Penguin extends Image {
     }
 
     public void setDrawable() {
-        Sprite sprite = spriteMap.get(state).get(direction);
+        Sprite sprite = spriteMap.get(state == STATE_FINISH ? STATE_IDLE : state).get(direction);
         super.setDrawable(new SpriteDrawable(sprite));
     }
 }

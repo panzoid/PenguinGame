@@ -1,7 +1,6 @@
 package com.panzoid.penguin.actors;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -9,54 +8,54 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.panzoid.penguin.Constants;
-import com.panzoid.penguin.Utilities;
+import com.panzoid.penguin.actions.PenguinActions;
+import com.panzoid.penguin.screens.GameScreen;
 
 /**
  * Created by weipa on 6/1/16.
  */
-public class MoveButton extends Image implements Penguin.PenguinStateListener {
-    private final Penguin penguin;
+public class MoveButton extends Image implements Penguin.PenguinListener {
+
     private final Vector2 direction;
-    private final TiledMap tiledMap;
+    private final GameScreen gameScreen;
 
-    public MoveButton(final Texture texture, final Penguin penguin, final Vector2 direction, final TiledMap map) {
+    public MoveButton(final GameScreen gameScreen, final Texture texture, final Vector2 direction) {
         super(texture);
-        setWidth(getWidth() / Constants.GAME_UNIT);
-        setHeight(getHeight() / Constants.GAME_UNIT);
-        setX(penguin.getX() + direction.x);
-        setY(penguin.getY() + direction.y);
+        setScale(Constants.GAME_SCALE);
+        setX(gameScreen.penguin.getX() + direction.x);
+        setY(gameScreen.penguin.getY() + direction.y);
 
-        this.penguin = penguin;
+        this.gameScreen = gameScreen;
         this.direction = direction;
-        this.tiledMap = map;
 
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                Action action = Utilities.getAction(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap);
+                Action action = PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.tiledMap);
                 if(action != null) {
-                    penguin.setDirection(direction);
-                    penguin.addAction(Actions.sequence(
-                            Utilities.startMove,
+                    gameScreen.moves++;
+                    gameScreen.penguin.setDirection(direction);
+                    gameScreen.penguin.addAction(Actions.sequence(
+                            PenguinActions.startMove,
                             action,
-                            Utilities.stopMove));
+                            PenguinActions.stopMove));
                 }
                 return true;
             }
         });
 
-        penguin.addListener(this);
+        gameScreen.penguin.addListener(this);
     }
 
 
     @Override
     public void onStateChange(int state) {
-        setX(penguin.getX() + direction.x);
-        setY(penguin.getY() + direction.y);
+        setX(gameScreen.penguin.getX() + direction.x);
+        setY(gameScreen.penguin.getY() + direction.y);
         setVisible(state == Penguin.STATE_IDLE && canMove());
     }
 
     private boolean canMove() {
-        return Utilities.getAction(new Vector2(penguin.getX(), penguin.getY()), direction, tiledMap) != null;
+        return PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.tiledMap) != null;
     }
 }

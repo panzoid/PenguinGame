@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Constants {
 
     public static final float GAME_WIDTH = 15f;
-    public static final float GAME_UNIT = 16f;
+    public static final float GAME_SCALE = 1 / 16f;
     public static final float MOVE_SPEED = 1 / 10f;
 
     public static final Vector2 LEFT = new Vector2(-1f, 0f);
