@@ -50,9 +50,13 @@ public class MoveButton extends Image implements Penguin.PenguinListener {
 
     @Override
     public void onStateChange(int state) {
-        setX(gameScreen.penguin.getX() + direction.x);
-        setY(gameScreen.penguin.getY() + direction.y);
-        setVisible(state == Penguin.STATE_IDLE && canMove());
+        if(state == Penguin.STATE_IDLE && canMove()) {
+            setX(gameScreen.penguin.getX() + direction.x);
+            setY(gameScreen.penguin.getY() + direction.y);
+            setVisible(true);
+        } else {
+            setVisible(false);
+        }
     }
 
     private boolean canMove() {

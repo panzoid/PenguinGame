@@ -142,8 +142,8 @@ public class PenguinActions {
         if(startX == endX && startY == endY) {
             return null;
         } else {
-            float moveSpeed = Vector2.dst(startX, startY, endX, endY) * Constants.MOVE_SPEED;
-            return Actions.moveTo(endX, endY, moveSpeed);
+            float duration = Vector2.dst(startX, startY, endX, endY) * Constants.MOVE_SPEED;
+            return Actions.moveTo(endX, endY, duration);
         }
     }
 }

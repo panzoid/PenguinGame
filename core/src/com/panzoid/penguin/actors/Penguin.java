@@ -25,10 +25,10 @@ public class Penguin extends Image {
     public static final int STATE_MOVE = 1;
     public static final int STATE_FINISH = 2;
 
-    private Set<PenguinListener> listeners = new HashSet<PenguinListener>();
+    private final Set<PenguinListener> listeners;
 
-    private int state = STATE_IDLE;
-    private Vector2 direction = Constants.DOWN;
+    private int state;
+    private Vector2 direction;
 
     private static HashMap<Integer, HashMap<Vector2, Sprite>> spriteMap;
     static {
@@ -56,6 +56,9 @@ public class Penguin extends Image {
     public Penguin() {
         super(spriteMap.get(STATE_IDLE).get(Constants.DOWN));
         setScale(Constants.GAME_SCALE);
+        state = STATE_IDLE;
+        direction = Constants.DOWN;
+        listeners = new HashSet<PenguinListener>();
     }
 
     public boolean addListener(PenguinListener listener) {
