@@ -1,18 +1,18 @@
 package com.panzoid.penguin.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.panzoid.penguin.PenguinGame;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,12 +22,10 @@ import java.util.Comparator;
  */
 public class MenuScreen extends PenguinScreen {
     private final Stage stage;
-    private final Skin skin;
 
-    public MenuScreen(final Game game) {
+    public MenuScreen(final PenguinGame game) {
         super(game);
         stage = new Stage(new ScreenViewport());
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
         FileHandle folder = Gdx.files.internal("tilemaps");
 
         VerticalGroup verticalGroup = new VerticalGroup();
@@ -35,21 +33,27 @@ public class MenuScreen extends PenguinScreen {
         FileHandle[] files = folder.list();
         sortLevels(files);
         for(final FileHandle file : files) {
-            TextButton button = new TextButton("Level "+file.nameWithoutExtension(), skin);
+            TextButton button = new TextButton("Level "+file.nameWithoutExtension(), game.getUI());
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(new GameScreen(game, new TmxMapLoader().load("tilemaps/"+file.name())));
+                    Gdx.app.log("WEI", "Selected level " + file.nameWithoutExtension());
+                    setGameScreen(new TmxMapLoader().load("tilemaps/"+file.name()));
                 }
             });
             verticalGroup.addActor(button);
         }
 
-        ScrollPane scrollPane = new ScrollPane(verticalGroup, skin);
+        ScrollPane scrollPane = new ScrollPane(verticalGroup, game.getUI());
         scrollPane.setScale(stage.getWidth() / scrollPane.getWidth(), stage.getHeight() / scrollPane.getHeight());
         stage.addActor(scrollPane);
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private void setGameScreen(TiledMap map) {
+        game.setScreen(new GameScreen(game, map));
+        dispose();
     }
 
     @Override
@@ -74,6 +78,5 @@ public class MenuScreen extends PenguinScreen {
     public void dispose() {
         super.dispose();
         stage.dispose();
-        skin.dispose();
     }
 }

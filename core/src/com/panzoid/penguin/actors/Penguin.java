@@ -1,11 +1,8 @@
 package com.panzoid.penguin.actors;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.panzoid.penguin.Constants;
 
 import java.util.HashMap;
@@ -29,32 +26,30 @@ public class Penguin extends Image {
 
     private int state;
     private Vector2 direction;
+    private final Skin skin;
 
-    private static HashMap<Integer, HashMap<Vector2, Sprite>> spriteMap;
+    private static HashMap<Integer, HashMap<Vector2, String>> spriteMap;
     static {
-        spriteMap = new HashMap<Integer, HashMap<Vector2, Sprite>>();
+        spriteMap = new HashMap<Integer, HashMap<Vector2, String>>();
 
-        TextureAtlas atlas = new TextureAtlas("sprites/pack.atlas");
-        Skin skin = new Skin();
-        skin.addRegions(atlas);
-
-        HashMap<Vector2, Sprite> idleMap = new HashMap<Vector2, Sprite>();
-        idleMap.put(Constants.LEFT, skin.getSprite("gunter_idle_left"));
-        idleMap.put(Constants.RIGHT, skin.getSprite("gunter_idle_right"));
-        idleMap.put(Constants.UP, skin.getSprite("gunter_idle_back"));
-        idleMap.put(Constants.DOWN, skin.getSprite("gunter_idle_front"));
+        HashMap<Vector2, String> idleMap = new HashMap<Vector2, String>();
+        idleMap.put(Constants.LEFT, "gunter_idle_left");
+        idleMap.put(Constants.RIGHT, "gunter_idle_right");
+        idleMap.put(Constants.UP, "gunter_idle_back");
+        idleMap.put(Constants.DOWN, "gunter_idle_front");
         spriteMap.put(STATE_IDLE, idleMap);
 
-        HashMap<Vector2, Sprite> slideMap = new HashMap<Vector2, Sprite>();
-        slideMap.put(Constants.LEFT, skin.getSprite("gunter_slide_left"));
-        slideMap.put(Constants.RIGHT, skin.getSprite("gunter_slide_right"));
-        slideMap.put(Constants.UP, skin.getSprite("gunter_slide_back"));
-        slideMap.put(Constants.DOWN, skin.getSprite("gunter_slide_front"));
+        HashMap<Vector2, String> slideMap = new HashMap<Vector2, String>();
+        slideMap.put(Constants.LEFT, "gunter_slide_left");
+        slideMap.put(Constants.RIGHT, "gunter_slide_right");
+        slideMap.put(Constants.UP, "gunter_slide_back");
+        slideMap.put(Constants.DOWN, "gunter_slide_front");
         spriteMap.put(STATE_MOVE, slideMap);
     }
 
-    public Penguin() {
-        super(spriteMap.get(STATE_IDLE).get(Constants.DOWN));
+    public Penguin(Skin skin) {
+        super(skin.getDrawable("gunter_idle_front"));
+        this.skin = skin;
         setScale(Constants.GAME_SCALE);
         state = STATE_IDLE;
         direction = Constants.DOWN;
@@ -95,7 +90,13 @@ public class Penguin extends Image {
     }
 
     public void setDrawable() {
-        Sprite sprite = spriteMap.get(state == STATE_FINISH ? STATE_IDLE : state).get(direction);
-        super.setDrawable(new SpriteDrawable(sprite));
+        String drawableName = spriteMap.get(state == STATE_FINISH ? STATE_IDLE : state).get(direction);
+        super.setDrawable(skin.getDrawable(drawableName));
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        listeners.clear();
     }
 }

@@ -1,12 +1,10 @@
 package com.panzoid.penguin.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -18,12 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.panzoid.penguin.Constants;
+import com.panzoid.penguin.PenguinGame;
 import com.panzoid.penguin.Utilities;
 import com.panzoid.penguin.actors.MoveButton;
 import com.panzoid.penguin.actors.Penguin;
@@ -36,7 +34,6 @@ public class GameScreen extends PenguinScreen {
     private final SpriteBatch batch;
     private final TiledMapRenderer tiledMapRenderer;
     private final InputMultiplexer input;
-    private final Skin skin;
     private final OrthographicCamera camera;
     private final Stage stage;
 
@@ -48,7 +45,7 @@ public class GameScreen extends PenguinScreen {
     public int moves;
 
 
-    public GameScreen(Game game, TiledMap tiledMap) {
+    public GameScreen(PenguinGame game, TiledMap tiledMap) {
         super(game);
         this.tiledMap = tiledMap;
         batch = new SpriteBatch();
@@ -60,10 +57,8 @@ public class GameScreen extends PenguinScreen {
         uiCamera = new OrthographicCamera(camera.viewportWidth / Constants.GAME_SCALE, camera.viewportHeight / Constants.GAME_SCALE);
         uiStage = new Stage(new FitViewport(uiCamera.viewportWidth, uiCamera.viewportHeight, uiCamera));
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
-
         stage = new Stage(new FitViewport(camera.viewportWidth, camera.viewportHeight, camera), batch);
-        penguin = new Penguin();
+        penguin = new Penguin(game.getSprites());
         penguin.addListener(new Penguin.PenguinListener() {
             @Override
             public void onStateChange(int state) {
@@ -73,10 +68,10 @@ public class GameScreen extends PenguinScreen {
             }
         });
         stage.addActor(penguin);
-        stage.addActor(new MoveButton(this, new Texture("sprites/arrow_left.png"), Constants.LEFT));
-        stage.addActor(new MoveButton(this, new Texture("sprites/arrow_right.png"), Constants.RIGHT));
-        stage.addActor(new MoveButton(this, new Texture("sprites/arrow_up.png"), Constants.UP));
-        stage.addActor(new MoveButton(this, new Texture("sprites/arrow_down.png"), Constants.DOWN));
+        stage.addActor(new MoveButton(this, game.getSprites().getDrawable("arrow_left"), Constants.LEFT));
+        stage.addActor(new MoveButton(this, game.getSprites().getDrawable("arrow_right"), Constants.RIGHT));
+        stage.addActor(new MoveButton(this, game.getSprites().getDrawable("arrow_up"), Constants.UP));
+        stage.addActor(new MoveButton(this, game.getSprites().getDrawable("arrow_down"), Constants.DOWN));
 
         input = new InputMultiplexer();
         input.addProcessor(uiStage);
@@ -151,17 +146,17 @@ public class GameScreen extends PenguinScreen {
         HorizontalGroup horizontalGroup = new HorizontalGroup();
         for(int i=3; i>0; i--) {
             if(moves <= i*10) {
-                horizontalGroup.addActor(new Image(new Texture("sprites/star_yellow.png")));
+                horizontalGroup.addActor(new Image(game.getSprites().getDrawable("star_yellow")));
             } else {
-                horizontalGroup.addActor(new Image(new Texture("sprites/star_blank.png")));
+                horizontalGroup.addActor(new Image(game.getSprites().getDrawable("star_blank")));
             }
         }
 
-        TextButton button = new TextButton("OK", skin);
+        TextButton button = new TextButton("OK", game.getUI());
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game));
+                setMenuScreen();
             }
         });
 
@@ -174,12 +169,16 @@ public class GameScreen extends PenguinScreen {
         uiStage.addActor(verticalGroup);
     }
 
+    private void setMenuScreen() {
+        game.setScreen(new MenuScreen(game));
+        dispose();
+    }
+
     @Override
     public void dispose() {
         super.dispose();
         batch.dispose();
         tiledMap.dispose();
-        skin.dispose();
         stage.dispose();
         uiStage.dispose();
     }

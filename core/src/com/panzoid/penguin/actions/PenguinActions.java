@@ -5,6 +5,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.panzoid.penguin.Constants;
@@ -23,57 +24,85 @@ public class PenguinActions {
         public boolean act(float delta) {
             elapsedTime += delta;
             if(elapsedTime <= 0.2f) return false;
-            ((Penguin)getTarget()).setState(Penguin.STATE_MOVE);
+            ((Penguin)getActor()).setState(Penguin.STATE_MOVE);
             elapsedTime = 0f;
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action stopMove = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setState(Penguin.STATE_IDLE);
+            ((Penguin)getActor()).setState(Penguin.STATE_IDLE);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action setStateFinish = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setState(Penguin.STATE_FINISH);
+            ((Penguin)getActor()).setState(Penguin.STATE_FINISH);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action setDirectionLeft = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setDirection(Constants.LEFT);
+            ((Penguin)getActor()).setDirection(Constants.LEFT);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action setDirectionRight = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setDirection(Constants.RIGHT);
+            ((Penguin)getActor()).setDirection(Constants.RIGHT);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action setDirectionUp = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setDirection(Constants.UP);
+            ((Penguin)getActor()).setDirection(Constants.UP);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
     public static final Action setDirectionDown = new Action() {
         @Override
         public boolean act(float delta) {
-            ((Penguin)getTarget()).setDirection(Constants.DOWN);
+            ((Penguin)getActor()).setDirection(Constants.DOWN);
             return true;
+        }
+
+        @Override
+        public void setTarget(Actor target) {
         }
     };
 
