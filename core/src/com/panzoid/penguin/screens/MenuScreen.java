@@ -3,8 +3,6 @@ package com.panzoid.penguin.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -13,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.panzoid.penguin.PenguinGame;
+import com.panzoid.penguin.PenguinLevel;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,28 +30,35 @@ public class MenuScreen extends PenguinScreen {
         VerticalGroup verticalGroup = new VerticalGroup();
         verticalGroup.center();
         FileHandle[] files = folder.list();
-        sortLevels(files);
-        for(final FileHandle file : files) {
-            TextButton button = new TextButton("Level "+file.nameWithoutExtension(), game.getUI());
+        PenguinLevel[] levels = new PenguinLevel[files.length];
+        for(int i=0; i<files.length; i++) {
+            levels[i] = new PenguinLevel(files[i]);
+        }
+
+        sortLevels(levels);
+        for(final PenguinLevel level : levels) {
+            TextButton button = new TextButton("Level "+level.getNumber() + ", Moves " + level.getHighScore(), game.getUI());
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("WEI", "Selected level " + file.nameWithoutExtension());
-                    setGameScreen(new TmxMapLoader().load("tilemaps/"+file.name()));
+                    setGameScreen(level);
                 }
             });
             verticalGroup.addActor(button);
         }
 
         ScrollPane scrollPane = new ScrollPane(verticalGroup, game.getUI());
-        scrollPane.setScale(stage.getWidth() / scrollPane.getWidth(), stage.getHeight() / scrollPane.getHeight());
+        scrollPane.setScale(stage.getWidth() / scrollPane.getWidth() / 2, stage.getHeight() / scrollPane.getHeight());
         stage.addActor(scrollPane);
 
         Gdx.input.setInputProcessor(stage);
+        Gdx.input.setCatchBackKey(false);
     }
 
-    private void setGameScreen(TiledMap map) {
-        game.setScreen(new GameScreen(game, map));
+
+
+    private void setGameScreen(PenguinLevel level) {
+        game.setScreen(new GameScreen(game, level));
         dispose();
     }
 
@@ -65,11 +71,11 @@ public class MenuScreen extends PenguinScreen {
         stage.draw();
     }
 
-    private void sortLevels(FileHandle[] in) {
-        Arrays.sort(in, new Comparator<FileHandle>() {
+    private void sortLevels(PenguinLevel[] levels) {
+        Arrays.sort(levels, new Comparator<PenguinLevel>() {
             @Override
-            public int compare(FileHandle o1, FileHandle o2) {
-                return new Integer(Integer.parseInt(o1.nameWithoutExtension())).compareTo(Integer.parseInt(o2.nameWithoutExtension()));
+            public int compare(PenguinLevel o1, PenguinLevel o2) {
+                return new Integer(o1.getNumber()).compareTo(o2.getNumber());
             }
         });
     }

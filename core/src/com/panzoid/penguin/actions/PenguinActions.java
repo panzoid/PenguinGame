@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.panzoid.penguin.Constants;
-import com.panzoid.penguin.Utilities;
+import com.panzoid.penguin.PenguinUtils;
 import com.panzoid.penguin.actors.Penguin;
 
 /**
@@ -112,7 +112,7 @@ public class PenguinActions {
         int x = (int) position.x;
         int y = (int) position.y;
 
-        if(position.equals(Utilities.getPosition(Constants.PROPERTY_FINISH, tiledMap))) {
+        if(position.equals(PenguinUtils.getPosition(Constants.PROPERTY_FINISH, tiledMap))) {
             return null;
         }
 

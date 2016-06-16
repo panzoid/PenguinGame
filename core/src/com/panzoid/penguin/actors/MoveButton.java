@@ -39,7 +39,7 @@ public class MoveButton extends Image implements Penguin.PenguinListener {
     }
 
     private boolean touched() {
-        Action action = PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.tiledMap);
+        Action action = PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.level.getTiledMap());
         if(action != null) {
             gameScreen.moves++;
             gameScreen.penguin.setDirection(direction);
@@ -63,6 +63,6 @@ public class MoveButton extends Image implements Penguin.PenguinListener {
     }
 
     private boolean canMove() {
-        return PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.tiledMap) != null;
+        return PenguinActions.getAction(new Vector2(gameScreen.penguin.getX(), gameScreen.penguin.getY()), direction, gameScreen.level.getTiledMap()) != null;
     }
 }

@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Created by weipa on 6/1/16.
  */
-public class Utilities {
+public class PenguinUtils {
 
     public static Vector2 getPosition(int flag, TiledMap tiledMap) {
         TiledMapTileLayer layer = (TiledMapTileLayer)tiledMap.getLayers().get(0);
